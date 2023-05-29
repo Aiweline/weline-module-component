@@ -21,9 +21,9 @@ class OffCanvas extends \Weline\Framework\View\Block implements \Weline\Componen
     const default_data = [
         'cache'                 => 300,
         'target-button-text'    => '添加',
-        'target-button-class'    => 'btn btn-success',
+        'target-button-class'   => 'btn btn-success',
         'submit-button-text'    => '保存',
-        'submit-button-class'    => 'btn btn-primary',
+        'submit-button-class'   => 'btn btn-primary',
         'title'                 => '',
         'close-button-show'     => '1',
         'close-button-text'     => '关闭',
@@ -51,7 +51,7 @@ class OffCanvas extends \Weline\Framework\View\Block implements \Weline\Componen
                 throw new Exception(__('请设置OffCanvas的Block块参数：' . $field . '.示例：%1', $this->doc()));
             }
             if ($check_field === 'action') {
-                $field = $this->request->isBackend() ? $this->getBackendUrl($field,$action_params) : $this->getUrl($field,$action_params);
+                $field = $this->request->isBackend() ? $this->getBackendUrl($field, $action_params) : $this->getUrl($field, $action_params);
             }
             $data[$check_field] = $field;
         }
@@ -63,7 +63,7 @@ class OffCanvas extends \Weline\Framework\View\Block implements \Weline\Componen
             if (str_contains($key, '-text')) {
                 $value = __($value);
             }
-            $data[$key] = $data[$key] ?: $value;
+            $data[$key] = $data[$key] ?? $value;
         }
         $data['class-names'] = $data['class-names'] . ' ' . self::direction[$data['direction']];
         $data                = array_merge(self::default_data, $data);
