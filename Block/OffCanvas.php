@@ -28,7 +28,7 @@ class OffCanvas extends \Weline\Framework\View\Block implements \Weline\Componen
         'close-button-show'     => '1',
         'close-button-text'     => '关闭',
         'direction'             => 'right',
-        'class-names'           => 'w-100 h-100 overflow-hidden w-75',
+        'class-names'           => 'h-100 overflow-hidden w-75',
         'off-canvas-body-style' => '',
     ];
     const direction    = [
