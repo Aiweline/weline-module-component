@@ -23,6 +23,8 @@ class Search extends \Weline\Framework\View\Block implements ComponentInterface
     public function __init(): void
     {
         parent::__init();
+        // 解析参数传参
+        $action_params = $this->getParseVarsParams('var-params');
         $check_fields = ['action', 'id'];
         $data         = $this->getData();
         foreach ($check_fields as $check_field) {
@@ -46,7 +48,7 @@ class Search extends \Weline\Framework\View\Block implements ComponentInterface
                 $params[$param]  = $this->request->getParam($param);
             }
         }
-        $data['params']     = $params;
+        $data['params']     = array_merge($params, $action_params);
         $data['keyword']     = $data['keyword'] ?? 'keyword';
         $data['method']      = $data['method'] ?? 'GET';
         $data['placeholder'] = $data['placeholder'] ??__( '回车搜索');
@@ -58,7 +60,9 @@ class Search extends \Weline\Framework\View\Block implements ComponentInterface
     {
         return htmlspecialchars($this->tmp_replace('
 <h3><lang>搜索组件：快速构建搜索框</lang></h3>
-<div>params：来自请求的参数（需要回填参数到action上时使用）</div>
+<p>params：来自请求的参数（需要回填参数到action上时使用）</p>
+<p>vars：来自传入的变量列表</p>
+<p>var-params：来自传入的变量组成的参数</p>
 <block class="Weline\Component\Block\Form\Search" 
 template="Weline_Component::form/search.phtml" 
 cache="0" 
@@ -68,6 +72,8 @@ params="demo_id,demo_name"
 method="get" 
 keyword="keyword" 
 value="Demo Keyword" 
+vars="demo,req" 
+var-params="{demo_id:demo.id,request_name:req.keyword}" 
 placeholder="Please input keywords"/>
 '));
     }
