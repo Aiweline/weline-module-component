@@ -58,16 +58,17 @@ class Search extends \Weline\Framework\View\Block implements ComponentInterface
     {
         return htmlspecialchars($this->tmp_replace('
 <h3><lang>搜索组件：快速构建搜索框</lang></h3>
+<div>params：来自请求的参数（需要回填参数到action上时使用）</div>
 <block class="Weline\Component\Block\Form\Search" 
 template="Weline_Component::form/search.phtml" 
-cache="300" 
+cache="0" 
 id="demo_search" 
 action="/demo/search" 
+params="demo_id,demo_name" 
 method="get" 
 keyword="keyword" 
 value="Demo Keyword" 
 placeholder="Please input keywords"/>
-
 '));
     }
 }
