@@ -47,7 +47,10 @@ class Search extends \Weline\Framework\View\Block implements ComponentInterface
                 unset($params[$key]);
                 $params[$param]  = $this->request->getParam($param);
             }
+        }else {
+            $params = [];
         }
+
         $data['params']     = array_merge($params, $action_params);
         $data['keyword']     = $data['keyword'] ?? 'keyword';
         $data['method']      = $data['method'] ?? 'GET';
