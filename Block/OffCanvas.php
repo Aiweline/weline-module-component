@@ -73,7 +73,7 @@ class OffCanvas extends \Weline\Framework\View\Block implements \Weline\Componen
             $data[$key] = $value;
         }
         $data['id']  = $data['id'] . md5(json_encode($data));
-        $this->_data = $data;
+        $this->setData($data);
         $this->assign($data);
     }
 
