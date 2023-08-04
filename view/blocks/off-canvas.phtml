@@ -1,15 +1,21 @@
-<button class='btn btn-primary pull-right {{target_button_class}}' type='button' data-bs-toggle='offcanvas'
-        data-bs-target='#{{id}}' aria-controls='{{id}}'>
-    <lang>{{target_button_text}}</lang>
-</button>
+<{{target_tag}} class='pull-right {{target_button_class}}' type='button' data-bs-toggle='offcanvas'
+data-bs-target='#{{id}}' aria-controls='{{id}}'>
+<has name='icon'>
+    <i class='{{icon}}'></i>
+</has>
+<lang>{{target_button_text}}</lang>
+</{{target_tag}}>
 <!-- {{id}} -->
 <div class='offcanvas w-75 {{class_names}}' tabindex='-1' id='{{id}}'
      aria-labelledby='{{id}}Label'>
     <div class='offcanvas-header'>
         <h5 id='{{id}}Label'>
+            <has name='icon'>
+                <i class='{{icon}}'></i>
+            </has>
             <lang>{{title}}</lang>
         </h5>
-        <has name="close_button_show">
+        <has name='close_button_show'>
             <button type='button' class='btn-close text-reset {{submit_button_class}}' data-bs-dismiss='offcanvas'
                     aria-label='{{close_button_text}}'></button>
         </has>
@@ -17,7 +23,7 @@
     <div class='offcanvas-body'>
         <div class='position-relative w-100 h-100 '>
             <iframe id='{{id}}Iframe' class='w-100 h-100'
-                    data-src="{{action}}"
+                    data-src='{{action}}'
                     frameborder='0'></iframe>
         </div>
     </div>

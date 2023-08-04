@@ -19,23 +19,25 @@ class OffCanvas extends \Weline\Framework\View\Block implements \Weline\Componen
     protected string $_template = 'Weline_Component::off-canvas.phtml';
 
     const default_data = [
-        'cache'                 => 300,
-        'target-button-text'    => '添加',
-        'target-button-class'   => 'btn btn-success',
-        'submit-button-text'    => '保存',
-        'submit-button-class'   => 'btn btn-primary',
-        'title'                 => '',
-        'close-button-show'     => '1',
-        'close-button-text'     => '关闭',
-        'direction'             => 'right',
-        'class-names'           => 'h-100 overflow-hidden w-75',
+        'cache' => 300,
+        'target-tag' => 'a',
+        'icon' => '',
+        'target-button-text' => '添加',
+        'target-button-class' => '',
+        'submit-button-text' => '保存',
+        'submit-button-class' => 'btn btn-primary',
+        'title' => '',
+        'close-button-show' => '1',
+        'close-button-text' => '关闭',
+        'direction' => 'right',
+        'class-names' => 'h-100 overflow-hidden w-75',
         'off-canvas-body-style' => '',
     ];
-    const direction    = [
-        'left'   => 'offcanvas-start',
-        'right'  => 'offcanvas-end',
+    const direction = [
+        'left' => 'offcanvas-start',
+        'right' => 'offcanvas-end',
         'bottom' => 'offcanvas-bottom',
-        'top'    => 'offcanvas-top',
+        'top' => 'offcanvas-top',
     ];
 
     function __init(): void
@@ -72,8 +74,8 @@ class OffCanvas extends \Weline\Framework\View\Block implements \Weline\Componen
             $key        = str_replace('-', '_', $key);
             $data[$key] = $value;
         }
-        $data['id']  = $data['id'] . md5(json_encode($data));
-        $this->_data = $data;
+        $data['id'] = $data['id'] . md5(json_encode($data));
+        $this->setData($data);
         $this->assign($data);
     }
 
@@ -87,6 +89,8 @@ cache="300"
 id="demo_off_canvas" 
 action="*/demo" 
 vars="demo,lang"
+target-tag="a"
+icon="mdi mdi-eye"
 action-params="{code:demo.code,lang:lang.code}"
 submit-button-text="保存"
 target-button-text="添加"
