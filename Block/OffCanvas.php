@@ -53,6 +53,7 @@ class OffCanvas extends \Weline\Framework\View\Block implements \Weline\Componen
                 throw new Exception(__('请设置OffCanvas的Block块参数：' . $field . '.示例：%1', $this->doc()));
             }
             if ($check_field === 'action') {
+                $action_params['isIframe'] = 'true';
                 $field = $this->request->isBackend() ? $this->getBackendUrl($field, $action_params) : $this->getUrl($field, $action_params);
             }
             $data[$check_field] = $field;
