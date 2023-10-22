@@ -21,7 +21,14 @@ data-bs-target='#{{id}}' aria-controls='{{id}}'>
         </has>
     </div>
     <div class='offcanvas-body'>
-        <div class='position-relative w-100 h-100 '>
+        <div class='position-relative w-100 h-100'>
+            <if condition="flush">
+                <div class="btn btn-group-justified sticky-top pull-right">
+                    <button class="btn btn-info pull-right" onclick="flushIframe()">
+                        <lang>刷新</lang>
+                    </button>
+                </div>
+            </if>
             <iframe id='{{id}}Iframe' class='w-100 h-100'
                     data-src='{{action}}'
                     frameborder='0'></iframe>
@@ -35,3 +42,11 @@ data-bs-target='#{{id}}' aria-controls='{{id}}'>
         Iframe.attr('src', Iframe.attr('data-src'))
     })
 </script>
+<if condition="flush">
+    <script>
+        function flushIframe() {
+            let iframe = $('#productAddIframe');
+            iframe.attr('src', iframe.attr('src'))
+        }
+    </script>
+</if>

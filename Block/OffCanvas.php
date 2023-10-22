@@ -30,6 +30,7 @@ class OffCanvas extends \Weline\Framework\View\Block implements \Weline\Componen
         'close-button-show' => '1',
         'close-button-text' => '关闭',
         'direction' => 'right',
+        'flush' => '1',
         'class-names' => 'h-100 overflow-hidden w-75',
         'off-canvas-body-style' => '',
     ];
@@ -96,6 +97,7 @@ icon="mdi mdi-eye"
 action-params="{code:demo.code,lang:lang.code}"
 submit-button-text="保存"
 target-button-text="添加"
+flush="1"
 target-button-class=""
 submit-button-class="btn btn-primary"
 close-button-show="1"
