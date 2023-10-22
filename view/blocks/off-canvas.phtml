@@ -45,8 +45,10 @@ data-bs-target='#{{id}}' aria-controls='{{id}}'>
 <if condition="flush">
     <script>
         function flushIframe() {
-            let iframe = $('#productAddIframe');
+            showLoading();
+            let iframe = $('#{{id}}Iframe');
             iframe.attr('src', iframe.attr('src'))
+            hideLoading();
         }
     </script>
 </if>
