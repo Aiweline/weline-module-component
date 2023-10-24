@@ -25,13 +25,13 @@ data-bs-target='#{{id}}' aria-controls='{{id}}'>
             <if condition='flush || save'>
                 <div class='btn btn-group-justified sticky-top pull-right gap-2 d-flex'>
                     <if condition='flush'>
-                        <button class='btn btn-default pull-right ' onclick='flushIframe()'>
-                            <lang>刷新</lang>
+                        <button class='{{flush_button_class}} pull-right ' onclick='flushIframe()'>
+                            <lang>{{flush_button_text}}</lang>
                         </button>
                     </if>
                     <if condition='save'>
-                        <button class='btn btn-info pull-right' id="{{id}}Save">
-                            <lang>保存</lang>
+                        <button class='{{submit_button_class}} pull-right' id="{{id}}Save">
+                            <lang>{{submit_button_text}}</lang>
                         </button>
                     </if>
                 </div>
