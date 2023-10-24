@@ -22,11 +22,18 @@ data-bs-target='#{{id}}' aria-controls='{{id}}'>
     </div>
     <div class='offcanvas-body'>
         <div class='position-relative w-100 h-100'>
-            <if condition="flush">
-                <div class="btn btn-group-justified sticky-top pull-right">
-                    <button class="btn btn-info pull-right" onclick="flushIframe()">
-                        <lang>刷新</lang>
-                    </button>
+            <if condition='flush || save'>
+                <div class='btn btn-group-justified sticky-top pull-right gap-2 d-flex'>
+                    <if condition='flush'>
+                        <button class='btn btn-default pull-right ' onclick='flushIframe()'>
+                            <lang>刷新</lang>
+                        </button>
+                    </if>
+                    <if condition='save'>
+                        <button class='btn btn-info pull-right' id="{{id}}Save">
+                            <lang>保存</lang>
+                        </button>
+                    </if>
                 </div>
             </if>
             <iframe id='{{id}}Iframe' class='w-100 h-100'
@@ -37,18 +44,48 @@ data-bs-target='#{{id}}' aria-controls='{{id}}'>
 </div>
 <script>
     //show.bs.offcanvas
-    $('#{{id}}').on('show.bs.offcanvas', function () {
-        let Iframe = $('#{{id}}Iframe')
-        Iframe.attr('src', Iframe.attr('data-src'))
+    $(function (){
+        $('#{{id}}').on('show.bs.offcanvas', function () {
+            let Iframe = $('#{{id}}Iframe')
+            Iframe.attr('src', Iframe.attr('data-src'))
+        })
     })
 </script>
-<if condition="flush">
+<if condition='flush'>
     <script>
-        function flushIframe() {
-            showLoading();
-            let iframe = $('#{{id}}Iframe');
-            iframe.attr('src', iframe.attr('src'))
-            hideLoading();
-        }
+        $(function (){
+            function flushIframe() {
+                showLoading();
+                let iframe = $('#{{id}}Iframe');
+                iframe.attr('src', iframe.attr('src'))
+                hideLoading();
+            }
+        })
+    </script>
+</if>
+<if condition='save'>
+    <script>
+        $(function (){
+            $('#{{id}}Save').on('click',function () {
+                let iframe = $('#{{id}}Iframe');
+                <?php if (isset($save_form) && $save_form): ?>
+                let form = iframe.contents().find('body').find('{{save_form}}')[0] ?? undefined;
+                <?php else: ?>
+                let form = iframe.contents().find('body').find('form')?? undefined;
+                <?php endif; ?>
+                if (form) {
+                    showLoading();
+                    if(form.length > 0){
+                        for (var i = 0; i < form.length; i++) {
+                            console.log(form[i]);
+                            form[i].submit();
+                        }
+                    }else{
+                        form.submit()
+                    }
+                    hideLoading();
+                }
+            })
+        })
     </script>
 </if>
