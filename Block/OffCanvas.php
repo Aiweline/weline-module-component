@@ -26,13 +26,13 @@ class OffCanvas extends \Weline\Framework\View\Block implements \Weline\Componen
         'target-button-class' => '',
         'submit-button-text' => '保存',
         'submit-button-class' => 'btn btn-primary',
+        'title' => '',
         'close-button-show' => '1',
         'close-button-text' => '关闭',
-        'flush-button-text' => '刷新',
-        'flush-button-class' => 'btn btn-info',
-        'title' => '',
         'direction' => 'right',
         'flush' => '1',
+        'flush-button-text' => "刷新",
+        'flush-button-class' => "btn btn-default",
         'save' => '1',
         'save-form' => '',
         'class-names' => 'h-100 overflow-hidden w-75',
@@ -50,8 +50,8 @@ class OffCanvas extends \Weline\Framework\View\Block implements \Weline\Componen
         parent::__init();
         // 解析参数传参
         $action_params = $this->getParseVarsParams('action-params');
-        $check_fields  = ['action', 'id'];
-        $data          = $this->getData();
+        $check_fields = ['action', 'id'];
+        $data = $this->getData();
         foreach ($check_fields as $check_field) {
             $field = $this->getData($check_field) ?: '';
             if (empty($field)) {
@@ -74,10 +74,10 @@ class OffCanvas extends \Weline\Framework\View\Block implements \Weline\Componen
             $data[$key] = $data[$key] ?? $value;
         }
         $data['class-names'] = $data['class-names'] . ' ' . self::direction[$data['direction']];
-        $data                = array_merge(self::default_data, $data);
+        $data = array_merge(self::default_data, $data);
         foreach ($data as $key => $value) {
             unset($data[$key]);
-            $key        = str_replace('-', '_', $key);
+            $key = str_replace('-', '_', $key);
             $data[$key] = $value;
         }
         $data['id'] = $data['id'] . md5(json_encode($data));
@@ -99,15 +99,17 @@ vars="demo,lang"
 target-tag="a"
 icon="mdi mdi-eye"
 action-params="{code:demo.code,lang:lang.code}"
-target-button-text="添加"
-target-button-class=""
 submit-button-text="保存"
 submit-button-class="btn btn-primary"
-close-button-show="1"
-close-button-text="取消"
+target-button-text="添加"
+target-button-class=""
+flush-button-text="刷新"
+flush-button-class="btn btn -default"
 flush="1"
 save="1"
 save-form="#demo-form"
+close-button-show="1"
+close-button-text="取消"
 direction="right"
 class-names="w-75"
 off-canvas-body-style=""

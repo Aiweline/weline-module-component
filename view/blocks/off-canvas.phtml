@@ -25,13 +25,13 @@ data-bs-target='#{{id}}' aria-controls='{{id}}'>
             <if condition='flush || save'>
                 <div class='btn btn-group-justified sticky-top pull-right gap-2 d-flex'>
                     <if condition='flush'>
-                        <button class='btn btn-default pull-right ' onclick='{{id}}flushIframe()'>
-                            <lang>刷新</lang>
+                        <button class='{{flush_button_class}} pull-right ' onclick='{{id}}flushIframe()'>
+                            <lang>{{flush_button_text}}</lang>
                         </button>
                     </if>
                     <if condition='save'>
-                        <button class='btn btn-info pull-right' id="{{id}}Save">
-                            <lang>保存</lang>
+                        <button class='{{submit_button_class}} pull-right' id="{{id}}Save">
+                            <lang>{{submit_button_text}}</lang>
                         </button>
                     </if>
                 </div>
@@ -46,8 +46,30 @@ data-bs-target='#{{id}}' aria-controls='{{id}}'>
     //show.bs.offcanvas
     $(function () {
         $('#{{id}}').on('show.bs.offcanvas', function () {
-            let Iframe = $('#{{id}}Iframe')
+            var Iframe = $('#{{id}}Iframe')
             Iframe.attr('src', Iframe.attr('data-src'))
+            // Iframe加载完成后
+            Iframe.on('load', function () {
+                <?php if (isset($save_form) and $save_form): ?>
+                var form = Iframe.contents().find('body').find('{{save_form}}')[0] ?? undefined;
+                <?php else: ?>
+                var form = Iframe.contents().find('body').find('form') ?? undefined;
+                <?php endif; ?>
+                if (form) {
+                    if (form.length > 0) {
+                        for (var i = 0; i < form.length; i++) {
+                            // 触发原生表单校验
+                            if ($(form[i]).find(':submit').length === 0) {
+                                form[i].insertAdjacentHTML('beforeend', '<input type="submit" class="sr-only">')
+                            }
+                        }
+                    } else {
+                        if (form.find(':submit').length === 0) {
+                            form.insertAdjacentHTML('beforeend', '<input type="submit" class="sr-only">')
+                        }
+                    }
+                }
+            })
         })
     })
 </script>
@@ -69,19 +91,20 @@ data-bs-target='#{{id}}' aria-controls='{{id}}'>
             $('#{{id}}Save').on('click', function () {
                 let iframe = $('#{{id}}Iframe');
                 <?php if ($save_form): ?>
-                let form = iframe.contents().find('body').find('{{save_form}}')[0] ?? undefined;
+                var form = iframe.contents().find('body').find('{{save_form}}')[0] ?? undefined;
                 <?php else: ?>
-                let form = iframe.contents().find('body').find('form') ?? undefined;
+                var form = iframe.contents().find('body').find('form') ?? undefined;
                 <?php endif; ?>
+
                 if (form) {
                     showLoading();
                     if (form.length > 0) {
                         for (var i = 0; i < form.length; i++) {
-                            console.log(form[i]);
-                            form[i].submit();
+                            let sub_form = $(form[i])
+                            sub_form.find(':submit').click()
                         }
                     } else {
-                        form.submit()
+                        sub_form.find(':submit').click()
                     }
                     hideLoading();
                 }
