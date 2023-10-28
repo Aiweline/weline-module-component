@@ -48,28 +48,30 @@ data-bs-target='#{{id}}' aria-controls='{{id}}'>
         $('#{{id}}').on('show.bs.offcanvas', function () {
             var Iframe = $('#{{id}}Iframe')
             Iframe.attr('src', Iframe.attr('data-src'))
-            // Iframe加载完成后
-            Iframe.on('load', function () {
-                <?php if (isset($save_form) and $save_form): ?>
-                var form = Iframe.contents().find('body').find('{{save_form}}')[0] ?? undefined;
-                <?php else: ?>
-                var form = Iframe.contents().find('body').find('form') ?? undefined;
-                <?php endif; ?>
-                if (form) {
-                    if (form.length > 0) {
-                        for (var i = 0; i < form.length; i++) {
-                            // 触发原生表单校验
-                            if ($(form[i]).find(':submit').length === 0) {
-                                form[i].insertAdjacentHTML('beforeend', '<input type="submit" class="sr-only">')
+            if ('{{save}}'==='1'){
+                // Iframe加载完成后
+                Iframe.on('load', function () {
+                    <?php if (isset($save_form) and $save_form): ?>
+                    var form = Iframe.contents().find('body').find('{{save_form}}')[0] ?? undefined;
+                    <?php else: ?>
+                    var form = Iframe.contents().find('body').find('form') ?? undefined;
+                    <?php endif; ?>
+                    if (form) {
+                        if (form.length > 0) {
+                            for (var i = 0; i < form.length; i++) {
+                                // 触发原生表单校验
+                                if ($(form[i]).find(':submit').length === 0) {
+                                    form[i].insertAdjacentHTML('beforeend', '<input type="submit" class="sr-only">')
+                                }
+                            }
+                        } else {
+                            if (form.find(':submit').length === 0) {
+                                form.insertAdjacentHTML('beforeend', '<input type="submit" class="sr-only">')
                             }
                         }
-                    } else {
-                        if (form.find(':submit').length === 0) {
-                            form.insertAdjacentHTML('beforeend', '<input type="submit" class="sr-only">')
-                        }
                     }
-                }
-            })
+                })
+            }
         })
     })
 </script>
