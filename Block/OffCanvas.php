@@ -33,7 +33,7 @@ class OffCanvas extends \Weline\Framework\View\Block implements \Weline\Componen
         'flush' => '1',
         'flush-button-text' => "刷新",
         'flush-button-class' => "btn btn-default",
-        'save' => '0',
+        'save' => '1',
         'save-form' => '',
         'class-names' => 'h-100 overflow-hidden w-75',
         'off-canvas-body-style' => '',
