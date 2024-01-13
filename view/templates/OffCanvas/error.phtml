@@ -30,7 +30,7 @@
 </div>
 <script>
     // 设置倒计时时间（单位：毫秒）
-    var countdownTime = 5000;
+    var countdownTime = parseInt('{{time}}000');
 
     // 获取倒计时元素
     var countdownElement = document.getElementById('countdown');
@@ -51,7 +51,10 @@
             let parentDocument = parent.$(window.parent.document)
             let closeOffcanvasButton = parentDocument.find('.offcanvas-header button')
             closeOffcanvasButton.click()
-            parent.location.reload();
+            let reload = parseInt('{{reload}}')
+            if(reload){
+                parent.location.reload();
+            }
         }
     }
 
