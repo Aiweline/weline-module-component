@@ -52,10 +52,11 @@ data-bs-target='#{{id}}' aria-controls='{{id}}'>
                 // Iframe加载完成后
                 Iframe.on('load', function () {
                     <?php if (isset($save_form) and $save_form): ?>
-                    var form = Iframe.contents().find('body').find('{{save_form}}')[0] ?? undefined;
+                    var form = Iframe.contents().find('body').find('{{save_form}}') ?? undefined;
                     <?php else: ?>
                     var form = Iframe.contents().find('body').find('form') ?? undefined;
                     <?php endif; ?>
+                    console.log('form',form)
                     if (form) {
                         if (form.length > 0) {
                             for (var i = 0; i < form.length; i++) {
@@ -93,7 +94,7 @@ data-bs-target='#{{id}}' aria-controls='{{id}}'>
             $('#{{id}}Save').on('click', function () {
                 let iframe = $('#{{id}}Iframe');
                 <?php if ($save_form): ?>
-                var form = iframe.contents().find('body').find('{{save_form}}')[0] ?? undefined;
+                var form = iframe.contents().find('body').find('{{save_form}}') ?? undefined;
                 <?php else: ?>
                 var form = iframe.contents().find('body').find('form') ?? undefined;
                 <?php endif; ?>
