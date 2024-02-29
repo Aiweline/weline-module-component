@@ -56,7 +56,6 @@ data-bs-target='#{{id}}' aria-controls='{{id}}'>
                     <?php else: ?>
                     var form = Iframe.contents().find('body').find('form') ?? undefined;
                     <?php endif; ?>
-                    console.log('form',form)
                     if (form) {
                         if (form.length > 0) {
                             for (var i = 0; i < form.length; i++) {
