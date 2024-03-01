@@ -50,8 +50,8 @@ class OffCanvas extends \Weline\Framework\View\Block implements \Weline\Componen
         parent::__init();
         // 解析参数传参
         $action_params = $this->getParseVarsParams('action-params');
-        $check_fields = ['action', 'id'];
-        $data = $this->getData();
+        $check_fields  = ['action', 'id'];
+        $data          = $this->getData();
         foreach ($check_fields as $check_field) {
             $field = $this->getData($check_field) ?: '';
             if (empty($field)) {
@@ -59,7 +59,7 @@ class OffCanvas extends \Weline\Framework\View\Block implements \Weline\Componen
             }
             if ($check_field === 'action') {
                 $action_params['isIframe'] = 'true';
-                $field = $this->request->isBackend() ? $this->getBackendUrl($field, $action_params) : $this->getUrl($field, $action_params);
+                $field                     = $this->request->isBackend() ? $this->getBackendUrl($field, $action_params) : $this->getUrl($field, $action_params);
             }
             $data[$check_field] = $field;
         }
@@ -74,12 +74,14 @@ class OffCanvas extends \Weline\Framework\View\Block implements \Weline\Componen
             $data[$key] = $data[$key] ?? $value;
         }
         $data['class-names'] = $data['class-names'] . ' ' . self::direction[$data['direction']];
-        $data = array_merge(self::default_data, $data);
+        $data                = array_merge(self::default_data, $data);
         foreach ($data as $key => $value) {
             unset($data[$key]);
-            $key = str_replace('-', '_', $key);
+            $key        = str_replace('-', '_', $key);
             $data[$key] = $value;
         }
+        // $data['id']只留下字母和下划线
+        $data['id'] = preg_replace('/[^\w]+/', '', $data['id']);
         $data['id'] = $data['id'] . md5(json_encode($data));
         $this->setData($data);
         $this->assign($data);
