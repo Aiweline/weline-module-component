@@ -48,7 +48,7 @@ data-bs-target='#{{id}}' aria-controls='{{id}}'>
         $('#{{id}}').on('show.bs.offcanvas', function () {
             var Iframe = $('#{{id}}Iframe')
             Iframe.attr('src', Iframe.attr('data-src'))
-            if ('{{save}}'==='1'){
+            if ('{{save}}' === '1') {
                 // Iframe加载完成后
                 Iframe.on('load', function () {
                     <?php if (isset($save_form) and $save_form): ?>
@@ -56,8 +56,8 @@ data-bs-target='#{{id}}' aria-controls='{{id}}'>
                     <?php else: ?>
                     var form = Iframe.contents().find('body').find('form') ?? undefined;
                     <?php endif; ?>
-                    if (form) {
-                        if (form.length > 0) {
+                    if (form !== undefined && form.length > 0) {
+                        if (form.length > 1) {
                             for (var i = 0; i < form.length; i++) {
                                 // 触发原生表单校验
                                 if ($(form[i]).find(':submit').length === 0) {
@@ -69,6 +69,8 @@ data-bs-target='#{{id}}' aria-controls='{{id}}'>
                                 form.insertAdjacentHTML('beforeend', '<input type="submit" class="sr-only">')
                             }
                         }
+                    }else{
+                        confirm('@lang{初始化错误,请检查表单是否正确!block【Weline\\Component\\Block\\OffCanvas】指定提交form表单未找到：{{save_form}}}')
                     }
                 })
             }
@@ -98,9 +100,9 @@ data-bs-target='#{{id}}' aria-controls='{{id}}'>
                 var form = iframe.contents().find('body').find('form') ?? undefined;
                 <?php endif; ?>
 
-                if (form) {
+                if (form !== undefined && form.length > 0) {
                     showLoading();
-                    if (form.length > 0) {
+                    if (form.length > 1) {
                         for (var i = 0; i < form.length; i++) {
                             let sub_form = $(form[i])
                             sub_form.find(':submit').click()
@@ -109,6 +111,8 @@ data-bs-target='#{{id}}' aria-controls='{{id}}'>
                         sub_form.find(':submit').click()
                     }
                     hideLoading();
+                }else{
+                    confirm('@lang{保存出错！请检查表单是否正确!block【Weline\\Component\\Block\\OffCanvas】指定提交form表单未找到：{{save_form}}}')
                 }
             })
         })
