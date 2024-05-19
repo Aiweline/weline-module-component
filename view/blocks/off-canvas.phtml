@@ -57,16 +57,12 @@ data-bs-target='#{{id}}' aria-controls='{{id}}'>
                     var form = Iframe.contents().find('body').find('form') ?? undefined;
                     <?php endif; ?>
                     if (form !== undefined && form.length > 0) {
-                        if (form.length > 1) {
+                        if (form.length > 0) {
                             for (var i = 0; i < form.length; i++) {
                                 // 触发原生表单校验
                                 if ($(form[i]).find(':submit').length === 0) {
                                     form[i].insertAdjacentHTML('beforeend', '<input type="submit" class="sr-only">')
                                 }
-                            }
-                        } else {
-                            if (form.find(':submit').length === 0) {
-                                form.insertAdjacentHTML('beforeend', '<input type="submit" class="sr-only">')
                             }
                         }
                     }else{
@@ -102,13 +98,11 @@ data-bs-target='#{{id}}' aria-controls='{{id}}'>
 
                 if (form !== undefined && form.length > 0) {
                     showLoading();
-                    if (form.length > 1) {
+                    if (form.length > 0) {
                         for (var i = 0; i < form.length; i++) {
                             let sub_form = $(form[i])
                             sub_form.find(':submit').click()
                         }
-                    } else {
-                        sub_form.find(':submit').click()
                     }
                     hideLoading();
                 }else{
