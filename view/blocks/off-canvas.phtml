@@ -57,20 +57,18 @@ data-bs-target='#{{id}}' aria-controls='{{id}}'>
                     var form = Iframe.contents().find('body').find('form') ?? undefined;
                     <?php endif; ?>
                     if (form !== undefined && form.length > 0) {
-                        if (form.length > 1) {
-                            for (var i = 0; i < form.length; i++) {
-                                // 触发原生表单校验
-                                if ($(form[i]).find(':submit').length === 0) {
-                                    form[i].insertAdjacentHTML('beforeend', '<input type="submit" class="sr-only">')
-                                }
-                            }
-                        } else {
-                            if (form.find(':submit').length === 0) {
-                                form.insertAdjacentHTML('beforeend', '<input type="submit" class="sr-only">')
+                        for (var i = 0; i < form.length; i++) {
+                            // 触发原生表单校验
+                            if ($(form[i]).find(':submit').length === 0) {
+                                form[i].insertAdjacentHTML('beforeend', '<input type="submit" class="sr-only">')
                             }
                         }
-                    }else{
-                        confirm('@lang{初始化错误,请检查表单是否正确!block【Weline\\Component\\Block\\OffCanvas】指定提交form表单未找到：{{save_form}}}')
+                    } else {
+                        <?php if (DEBUG) {
+                   $msg = __("DEBUG模式：初始化错误,请检查表单是否正确!block【Weline\\Component\\Block\\OffCanvas】指定提交form表单未找到：%1}", $save_form);
+                   echo " confirm({$msg});";
+                    }
+                        ?>
                     }
                 })
             }
@@ -101,18 +99,18 @@ data-bs-target='#{{id}}' aria-controls='{{id}}'>
                 <?php endif; ?>
 
                 if (form !== undefined && form.length > 0) {
-                    showLoading();
-                    if (form.length > 1) {
-                        for (var i = 0; i < form.length; i++) {
-                            let sub_form = $(form[i])
-                            sub_form.find(':submit').click()
-                        }
-                    } else {
+                    for (var i = 0; i < form.length; i++) {
+                        let sub_form = $(form[i])
                         sub_form.find(':submit').click()
+                        showLoading();
                     }
                     hideLoading();
-                }else{
-                    confirm('@lang{保存出错！请检查表单是否正确!block【Weline\\Component\\Block\\OffCanvas】指定提交form表单未找到：{{save_form}}}')
+                } else {
+                    <?php if (DEBUG) {
+                    $msg = __("DEBUG模式：保存出错！请检查表单是否正确!block【Weline\\Component\\Block\\OffCanvas】指定提交form表单未找到：%1}", $save_form);
+                   echo " confirm({$msg});";
+                }
+                    ?>
                 }
             })
         })

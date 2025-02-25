@@ -30,7 +30,7 @@ class Search extends \Weline\Framework\View\Block implements ComponentInterface
         foreach ($check_fields as $check_field) {
             $field = $this->getData($check_field) ?: '';
             if (empty($field)) {
-                throw new Exception(__('请设置搜索Block块参数：' . $check_field . '.示例：%1', $this->doc()));
+                throw new Exception(__('请设置搜索Block块参数：' . $field . '.示例：%1', $this->doc()));
             }
             if ($check_field === 'action') {
                 $field = $this->request->isBackend() ? $this->getBackendUrl($field) : $this->getUrl($field);
