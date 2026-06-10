@@ -50,16 +50,18 @@ class OffCanvas extends \Weline\Framework\View\Block implements \Weline\Componen
         parent::__init();
         // 解析参数传参
         $action_params = $this->getParseVarsParams('action-params');
-        $check_fields  = ['action', 'id'];
-        $data          = $this->getData();
+        $check_fields = ['action', 'id'];
+        $data = $this->getData();
         foreach ($check_fields as $check_field) {
             $field = $this->getData($check_field) ?: '';
             if (empty($field)) {
-                throw new Exception(__('请设置OffCanvas的Block块参数：' . $field . '.示例：%1', $this->doc()));
+                throw new Exception(__('请设置OffCanvas的Block块参数：' . $field . '.示例：%{1}', $this->doc()));
             }
             if ($check_field === 'action') {
                 $action_params['isIframe'] = 'true';
-                $field                     = $this->request->isBackend() ? $this->getBackendUrl($field, $action_params) : $this->getUrl($field, $action_params);
+                // 与 Url::isCurrentAreaBackend() 对齐：WLS 下单例 Request 与 w_env('area') 可能短暂不一致，
+                // 仅用 isBackend() 会把 */admin/... 生成成无前缀前台 URL，iframe POST 走 frontend 路由表 → 404。
+                $field = $this->shouldBuildBackendActionUrl() ? $this->getBackendUrl($field, $action_params) : $this->getUrl($field, $action_params);
             }
             $data[$check_field] = $field;
         }
@@ -74,17 +76,30 @@ class OffCanvas extends \Weline\Framework\View\Block implements \Weline\Componen
             $data[$key] = $data[$key] ?? $value;
         }
         $data['class-names'] = $data['class-names'] . ' ' . self::direction[$data['direction']];
-        $data                = array_merge(self::default_data, $data);
+        $data = array_merge(self::default_data, $data);
         foreach ($data as $key => $value) {
             unset($data[$key]);
-            $key        = str_replace('-', '_', $key);
+            $key = str_replace('-', '_', $key);
             $data[$key] = $value;
         }
         // $data['id']只留下字母和下划线
         $data['id'] = preg_replace('/[^\w]+/', '', $data['id']);
-        $data['id'] = $data['id'] . md5(json_encode($data));
+        $data['id'] = $data['id'] . md5(json_encode($data ?? []));
         $this->setData($data);
         $this->assign($data);
+    }
+
+    /**
+     * 是否与 {@see \Weline\Framework\Http\Url::getUrl()} 一样按「后台区域」拼接 URL（含 backend key 前缀）。
+     */
+    private function shouldBuildBackendActionUrl(): bool
+    {
+        $area = (string) \w_env('area', '');
+        if ($area === 'backend' || $area === 'rest_backend') {
+            return true;
+        }
+
+        return $this->request->isBackend();
     }
 
     public function doc(): string

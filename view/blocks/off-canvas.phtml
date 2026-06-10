@@ -1,19 +1,19 @@
 <{{target_tag}} class='{{target_button_class}}' type='button' data-bs-toggle='offcanvas'
-data-bs-target='#{{id}}' aria-controls='{{id}}'>
-<has name='icon'>
-    <i class='{{icon}}'></i>
-</has>
-<lang>{{target_button_text}}</lang>
+data-bs-target='#{{id}}' aria-controls='{{id}}' title='{{title|""}}'>
+<?php if (!empty($icon)): ?>
+    <i class='<?= $icon ?>'></i>
+<?php endif; ?>
+<lang>{{target_button_text|''}}</lang>
 </{{target_tag}}>
 <!-- {{id}} -->
-<div class='offcanvas {{class_names}}' tabindex='-1' id='{{id}}'
+<div class='offcanvas weline-component-offcanvas {{class_names}}' tabindex='-1' id='{{id}}'
      aria-labelledby='{{id}}Label'>
     <div class='offcanvas-header'>
         <h5 id='{{id}}Label'>
-            <has name='icon'>
-                <i class='{{icon}}'></i>
-            </has>
-            <lang>{{title}}</lang>
+            <?php if (!empty($icon)): ?>
+                <i class='<?= $icon ?>'></i>
+            <?php endif; ?>
+            <lang>{{title|''}}</lang>
         </h5>
         <has name='close_button_show'>
             <button type='button' class='btn-close text-reset {{submit_button_class}}' data-bs-dismiss='offcanvas'
@@ -31,7 +31,7 @@ data-bs-target='#{{id}}' aria-controls='{{id}}'>
                     </if>
                     <if condition='save'>
                         <button class='{{submit_button_class}} pull-right' id="{{id}}Save">
-                            <lang>{{submit_button_text}}</lang>
+                            <lang>{{submit_button_text|'保存'}}</lang>
                         </button>
                     </if>
                 </div>
@@ -42,35 +42,137 @@ data-bs-target='#{{id}}' aria-controls='{{id}}'>
         </div>
     </div>
 </div>
+<style>
+    .weline-component-offcanvas {
+        z-index: 200020 !important;
+    }
+    .offcanvas-backdrop.weline-component-offcanvas-backdrop {
+        position: fixed !important;
+        inset: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        transform: none !important;
+        z-index: 200009 !important;
+    }
+    .weline-component-offcanvas-screen {
+        position: fixed !important;
+        inset: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        background: rgba(33, 37, 41, 0.5);
+        z-index: 200010 !important;
+        pointer-events: auto;
+    }
+    body.weline-component-offcanvas-active #page-topbar,
+    body.weline-component-offcanvas-active .navbar-header,
+    body.weline-component-offcanvas-active .vertical-menu {
+        z-index: 200000 !important;
+    }
+</style>
 <script>
     //show.bs.offcanvas
     $(function () {
+        var offcanvasEl = document.getElementById('{{id}}');
+        if (offcanvasEl && offcanvasEl.parentElement !== document.body) {
+            document.body.appendChild(offcanvasEl);
+        }
+        function markOffcanvasBackdrop() {
+            $('.offcanvas-backdrop').addClass('weline-component-offcanvas-backdrop');
+            document.body.classList.add('weline-component-offcanvas-active');
+        }
+        function ensureOffcanvasScreen() {
+            var screenId = 'weline-component-offcanvas-screen';
+            var screen = document.getElementById(screenId);
+            if (!screen) {
+                screen = document.createElement('div');
+                screen.id = screenId;
+                screen.className = 'weline-component-offcanvas-screen';
+                screen.addEventListener('click', function () {
+                    var shown = document.querySelector('.weline-component-offcanvas.show');
+                    if (!shown || !window.bootstrap || !window.bootstrap.Offcanvas) {
+                        return;
+                    }
+                    var instance = window.bootstrap.Offcanvas.getInstance(shown);
+                    if (instance) {
+                        instance.hide();
+                    }
+                });
+                document.body.appendChild(screen);
+            }
+        }
+        function removeOffcanvasScreenIfIdle() {
+            if ($('.weline-component-offcanvas.show').length) {
+                return;
+            }
+            var screen = document.getElementById('weline-component-offcanvas-screen');
+            if (screen) {
+                screen.remove();
+            }
+        }
         $('#{{id}}').on('show.bs.offcanvas', function () {
+            document.body.classList.add('weline-component-offcanvas-active');
+            ensureOffcanvasScreen();
+            setTimeout(markOffcanvasBackdrop, 0);
             var Iframe = $('#{{id}}Iframe')
             Iframe.attr('src', Iframe.attr('data-src'))
             if ('{{save}}' === '1') {
                 // Iframe加载完成后
                 Iframe.on('load', function () {
-                    <?php if (isset($save_form) and $save_form): ?>
-                    var form = Iframe.contents().find('body').find('{{save_form}}') ?? undefined;
-                    <?php else: ?>
-                    var form = Iframe.contents().find('body').find('form') ?? undefined;
-                    <?php endif; ?>
-                    if (form !== undefined && form.length > 0) {
-                        for (var i = 0; i < form.length; i++) {
-                            // 触发原生表单校验
-                            if ($(form[i]).find(':submit').length === 0) {
-                                form[i].insertAdjacentHTML('beforeend', '<input type="submit" class="sr-only">')
+                    try {
+                        // 优先看 iframe 内 body 是否有 data-offcanvas-result（success/error 模板会输出），有则一律不检测 form
+                        try {
+                            var resultAttr = Iframe.contents().find('body').attr('data-offcanvas-result');
+                            if (resultAttr === 'success' || resultAttr === 'error' || resultAttr === 'info') {
+                                return;
                             }
+                        } catch (e) {}
+                        // 再按 URL 判断：成功/错误页（前端或后端路由）不检测 form
+                        var iframeSrc = Iframe.attr('src') || '';
+                        var iframeLocation = '';
+                        try { iframeLocation = Iframe[0].contentWindow.location.href || ''; } catch (e) {}
+                        var u = iframeSrc + ' ' + iframeLocation;
+                        var isOffcanvasResultPage = u.indexOf('/component/offcanvas/') !== -1 ||
+                                                    u.indexOf('/component/backend/offcanvas/') !== -1 ||
+                                                    /offcanvas\/(getSuccess|getError|getResult|success|error)([\?\/\s]|$)/i.test(u);
+                        if (isOffcanvasResultPage) {
+                            return;
                         }
-                    } else {
-                        <?php if (DEBUG) {
-                   $msg = __("DEBUG模式：初始化错误,请检查表单是否正确!block【Weline\\Component\\Block\\OffCanvas】指定提交form表单未找到：%1}", $save_form);
-                   echo " confirm({$msg});";
-                    }
-                        ?>
+                        
+                        <?php if (isset($save_form) and $save_form): ?>
+                        var form = Iframe.contents().find('body').find('{{save_form}}');
+                        form = (form && form.length > 0) ? form : undefined;
+                        <?php else: ?>
+                        var form = Iframe.contents().find('body').find('form');
+                        form = (form && form.length > 0) ? form : undefined;
+                        <?php endif; ?>
+                        if (form !== undefined && form.length > 0) {
+                            for (var i = 0; i < form.length; i++) {
+                                // 触发原生表单校验
+                                if ($(form[i]).find(':submit').length === 0) {
+                                    form[i].insertAdjacentHTML('beforeend', '<input type="submit" class="sr-only">')
+                                }
+                            }
+                        } else {
+                            <?php if (DEBUG) {
+                           $msg = __("DEBUG模式：初始化错误,请检查表单是否正确!block【Weline\\Component\\Block\\OffCanvas】指定提交form表单未找到：%{1}", $save_form ?? '');
+                           $msgJs = addslashes($msg);
+                           echo "if(window.parent&&window.parent.BackendToast){window.parent.BackendToast.warning('{$msgJs}');}else{console.warn('{$msgJs}');}";
+                            }
+                            ?>
+                        }
+                    } catch (e) {
+                        // 跨域或其他错误时忽略
+                        console.log('OffCanvas form check skipped:', e);
                     }
                 })
+            }
+        })
+        $('#{{id}}').on('shown.bs.offcanvas', markOffcanvasBackdrop)
+        $('#{{id}}').on('hidden.bs.offcanvas', function () {
+            if (!$('.weline-component-offcanvas.show').length) {
+                $('.offcanvas-backdrop.weline-component-offcanvas-backdrop').removeClass('weline-component-offcanvas-backdrop');
+                document.body.classList.remove('weline-component-offcanvas-active');
+                removeOffcanvasScreenIfIdle();
             }
         })
     })
@@ -93,24 +195,50 @@ data-bs-target='#{{id}}' aria-controls='{{id}}'>
             $('#{{id}}Save').on('click', function () {
                 let iframe = $('#{{id}}Iframe');
                 <?php if ($save_form): ?>
-                var form = iframe.contents().find('body').find('{{save_form}}') ?? undefined;
+                var form = iframe.contents().find('body').find('{{save_form}}');
+                form = (form && form.length > 0) ? form : undefined;
                 <?php else: ?>
-                var form = iframe.contents().find('body').find('form') ?? undefined;
+                var form = iframe.contents().find('body').find('form');
+                form = (form && form.length > 0) ? form : undefined;
                 <?php endif; ?>
 
-                if (form !== undefined && form.length > 0) {
-                    for (var i = 0; i < form.length; i++) {
-                        let sub_form = $(form[i])
-                        sub_form.find(':submit').click()
-                        showLoading();
+                try {
+                    // 优先看 body 的 data-offcanvas-result 标记，有则不检测 form
+                    try {
+                        var resultAttr = iframe.contents().find('body').attr('data-offcanvas-result');
+                        if (resultAttr === 'success' || resultAttr === 'error' || resultAttr === 'info') {
+                            return;
+                        }
+                    } catch (e) {}
+                    var iframeSrc = iframe.attr('src') || '';
+                    var iframeLocation = '';
+                    try { iframeLocation = iframe[0].contentWindow.location.href || ''; } catch (e) {}
+                    var u = iframeSrc + ' ' + iframeLocation;
+                    var isOffcanvasResultPage = u.indexOf('/component/offcanvas/') !== -1 ||
+                                                u.indexOf('/component/backend/offcanvas/') !== -1 ||
+                                                /offcanvas\/(getSuccess|getError|getResult|success|error)([\?\/\s]|$)/i.test(u);
+                    if (isOffcanvasResultPage) {
+                        return;
                     }
-                    hideLoading();
-                } else {
-                    <?php if (DEBUG) {
-                    $msg = __("DEBUG模式：保存出错！请检查表单是否正确!block【Weline\\Component\\Block\\OffCanvas】指定提交form表单未找到：%1}", $save_form);
-                   echo " confirm({$msg});";
-                }
-                    ?>
+                    
+                    if (form !== undefined && form.length > 0) {
+                        for (var i = 0; i < form.length; i++) {
+                            let sub_form = $(form[i])
+                            sub_form.find(':submit').click()
+                            showLoading();
+                        }
+                        hideLoading();
+                    } else {
+                        <?php if (DEBUG) {
+                        $msg = __("DEBUG模式：保存出错！请检查表单是否正确!block【Weline\\Component\\Block\\OffCanvas】指定提交form表单未找到：%{1}", $save_form ?? '');
+                        $msgJs = addslashes($msg);
+                        echo "if(window.parent&&window.parent.BackendToast){window.parent.BackendToast.warning('{$msgJs}');}else{console.warn('{$msgJs}');}";
+                    }
+                        ?>
+                    }
+                } catch (e) {
+                    // 跨域或其他错误时忽略
+                    console.log('OffCanvas form submit check skipped:', e);
                 }
             })
         })
