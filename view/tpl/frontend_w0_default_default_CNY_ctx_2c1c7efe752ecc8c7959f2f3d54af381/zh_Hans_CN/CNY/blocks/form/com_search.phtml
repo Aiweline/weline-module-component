@@ -1,0 +1,29 @@
+<?php /* hash:995d848124c01b9418c0e4ceb14b27f3-1247 */ ?>
+<form class='app-search' data-app-search-keydown method='<?php echo ($method ?? $this->getData('method')); ?>' action='<?php echo ($action ?? $this->getData('action')); ?>'>
+    <div class='position-relative'>
+        <input type='text' id='<?php echo ($id ?? $this->getData('id')); ?>' name='<?php echo ($keyword ?? $this->getData('keyword')); ?>' class='form-control' placeholder='<?php echo ($placeholder ?? $this->getData('placeholder')); ?>' value='<?php echo ($value ?? $this->getData('value')); ?>'>
+        <span class='ri-search-line'></span>
+    </div>
+    
+</form>
+<script type='text/javascript'>
+    (function () {
+        document.querySelectorAll('form.app-search[data-app-search-keydown]').forEach(function (form) {
+            if (form.dataset.appSearchBound === '1') {
+                return;
+            }
+            form.dataset.appSearchBound = '1';
+            form.addEventListener('keydown', function (event) {
+                if (event.key !== 'Enter' || event.target.tagName === 'TEXTAREA') {
+                    return;
+                }
+                event.preventDefault();
+                if (typeof form.requestSubmit === 'function') {
+                    form.requestSubmit();
+                    return;
+                }
+                form.submit();
+            });
+        });
+    })();
+</script>

@@ -1,7 +1,7 @@
 <{{target_tag}} class='{{target_button_class}}' type='button' data-bs-toggle='offcanvas'
 data-bs-target='#{{id}}' aria-controls='{{id}}' title='{{title|""}}'>
 <?php if (!empty($icon)): ?>
-    <i class='<?= $icon ?>'></i>
+    <i class='<?= $icon ?>' aria-hidden='true'></i>
 <?php endif; ?>
 <lang>{{target_button_text|''}}</lang>
 </{{target_tag}}>
@@ -11,7 +11,7 @@ data-bs-target='#{{id}}' aria-controls='{{id}}' title='{{title|""}}'>
     <div class='offcanvas-header'>
         <h5 id='{{id}}Label'>
             <?php if (!empty($icon)): ?>
-                <i class='<?= $icon ?>'></i>
+                <i class='<?= $icon ?>' aria-hidden='true'></i>
             <?php endif; ?>
             <lang>{{title|''}}</lang>
         </h5>
@@ -25,7 +25,7 @@ data-bs-target='#{{id}}' aria-controls='{{id}}' title='{{title|""}}'>
             <if condition='flush || save'>
                 <div class='btn btn-group-justified sticky-top pull-right gap-2 d-flex'>
                     <if condition='flush'>
-                        <button class='{{flush_button_class}} pull-right ' onclick='{{id}}flushIframe()'>
+                        <button class='{{flush_button_class}} pull-right ' data-offcanvas-flush='{{id}}'>
                             <lang>{{flush_button_text}}</lang>
                         </button>
                     </if>
@@ -186,6 +186,10 @@ data-bs-target='#{{id}}' aria-controls='{{id}}' title='{{title|""}}'>
                 iframe.attr('src', iframe.attr('src'))
                 hideLoading();
             }
+
+            $('[data-offcanvas-flush="{{id}}"]').on('click', function () {
+                window['{{id}}flushIframe']();
+            })
         })
     </script>
 </if>
@@ -223,8 +227,13 @@ data-bs-target='#{{id}}' aria-controls='{{id}}' title='{{title|""}}'>
                     
                     if (form !== undefined && form.length > 0) {
                         for (var i = 0; i < form.length; i++) {
-                            let sub_form = $(form[i])
-                            sub_form.find(':submit').click()
+                            // 使用原生 requestSubmit 触发 submit 事件，兼容 iframe 内由 JS 接管的 AJAX 表单。
+                            // 直接模拟按钮 click 在表单调用 preventDefault 时可能只触发按钮事件而不进入提交处理。
+                            if (typeof form[i].requestSubmit === 'function') {
+                                form[i].requestSubmit();
+                            } else {
+                                $(form[i]).trigger('submit');
+                            }
                             showLoading();
                         }
                         hideLoading();
